@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==========================
-# Improved Safe Auto-Deployment Script
+# Improved Safe Auto-Deployment Script with Docker Check
 # ==========================
 
 set -e
@@ -35,6 +35,8 @@ read -p "Enter SSH key path: " SSH_KEY
 read -p "Can you use sudo on the remote server without password prompt? (y/n) [n]: " HAS_SUDO
 HAS_SUDO=${HAS_SUDO:-n}
 if [ "$HAS_SUDO" = "y" ]; then USE_SUDO="sudo "; else USE_SUDO=""; fi
+read -p "Attempt to install Docker if not found on remote? (y/n) [n]: " INSTALL_DOCKER
+INSTALL_DOCKER=${INSTALL_DOCKER:-n}
 
 # --- Parse repo name ---
 REPO_NAME=$(basename -s .git "$REPO_URL")
@@ -71,6 +73,35 @@ else
   exit 1
 fi
 
+# --- Check if Docker is installed on remote ---
+echo -e "${YELLOW}[INFO] Checking if Docker is installed on remote server...${NC}"
+DOCKER_INSTALLED=$(ssh -i "$SSH_KEY" -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "command -v docker >/dev/null 2>&1 && echo yes || echo no")
+
+if [ "$DOCKER_INSTALLED" != "yes" ]; then
+  if [ "$INSTALL_DOCKER" = "y" ] && [ "$HAS_SUDO" = "y" ]; then
+    echo -e "${YELLOW}[INFO] Attempting to install Docker on remote server (assuming Ubuntu/Debian)...${NC}"
+    ssh -i "$SSH_KEY" -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" bash <<EOF
+set -e
+$USE_SUDO apt-get update
+$USE_SUDO apt-get install -y ca-certificates curl
+$USE_SUDO install -m 0755 -d /etc/apt/keyrings
+$USE_SUDO curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+$USE_SUDO chmod a+r /etc/apt/keyrings/docker.asc
+echo "deb [arch=\$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \$(. /etc/os-release && echo "\$VERSION_CODENAME") stable" | $USE_SUDO tee /etc/apt/sources.list.d/docker.list > /dev/null
+$USE_SUDO apt-get update
+$USE_SUDO apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+$USE_SUDO systemctl start docker
+$USE_SUDO systemctl enable docker
+EOF
+    echo -e "${GREEN}[INFO] Docker installation attempted.${NC}"
+  else
+    echo -e "${RED}[ERROR] Docker not found on remote server. Please install Docker manually or enable auto-install with sudo. Exiting.${NC}"
+    exit 1
+  fi
+else
+  echo -e "${GREEN}[INFO] Docker is installed on remote server.${NC}"
+fi
+
 # --- Copy Files (excluding .git using tar + scp) ---
 echo -e "${YELLOW}[INFO] Copying files to remote server (excluding .git)...${NC}"
 tar --exclude='.git' -czf "$REPO_NAME.tar.gz" "$REPO_NAME"
@@ -97,17 +128,17 @@ set -e
 cd ~/$REPO_NAME
 
 echo "[REMOTE] Building Docker image..."
-docker build -t $APP_NAME .
+$USE_SUDO docker build -t $APP_NAME .
 
 echo "[REMOTE] Stopping old container..."
-docker stop $APP_NAME >/dev/null 2>&1 || true
-docker rm $APP_NAME >/dev/null 2>&1 || true
+$USE_SUDO docker stop $APP_NAME >/dev/null 2>&1 || true
+$USE_SUDO docker rm $APP_NAME >/dev/null 2>&1 || true
 
 echo "[REMOTE] Starting new container on port $CONTAINER_HOST_PORT..."
-docker run -d -p $CONTAINER_HOST_PORT:$CONTAINER_INTERNAL_PORT --name $APP_NAME $APP_NAME
+$USE_SUDO docker run -d -p $CONTAINER_HOST_PORT:$CONTAINER_INTERNAL_PORT --name $APP_NAME $APP_NAME
 
 echo "[REMOTE] Checking running containers..."
-docker ps --filter "name=$APP_NAME"
+$USE_SUDO docker ps --filter "name=$APP_NAME"
 EOF
 
 # --- Configure Nginx Reverse Proxy ---
@@ -153,3 +184,4 @@ EOF
 echo -e "${GREEN}=== DEPLOYMENT COMPLETE ===${NC}"
 echo "Check your app at: http://$SSH_HOST"
 echo "Logs saved to: $LOGFILE"
+
