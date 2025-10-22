@@ -1,0 +1,3 @@
+[0;32m=== DEPLOYMENT STARTED ===[0m
+Enter GitHub repository URL: Enter Personal Access Token (leave empty if public repo): 
+Enter Branch name: Enter SSH username: Enter Server IP address: Enter SSH port [default 22]: Enter SSH key path: Can you use sudo on the remote server without password prompt? (y/n) [n]: 
