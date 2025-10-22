@@ -32,8 +32,8 @@ read -p "Enter Server IP address: " SSH_HOST
 read -p "Enter SSH port [default 22]: " SSH_PORT
 SSH_PORT=${SSH_PORT:-22}
 read -p "Enter SSH key path: " SSH_KEY
-read -p "Can you use sudo on the remote server without password prompt? (y/n) [n]: " HAS_SUDO
-HAS_SUDO=${HAS_SUDO:-n}
+read -p "Can you use sudo on the remote server without password prompt? (y/n) [y]: " HAS_SUDO
+HAS_SUDO=${HAS_SUDO:-y}
 if [ "$HAS_SUDO" = "y" ]; then USE_SUDO="sudo "; else USE_SUDO=""; fi
 
 # --- Parse repo name ---
@@ -182,4 +182,5 @@ EOF
 echo -e "${GREEN}=== DEPLOYMENT COMPLETE ===${NC}"
 echo "Check your app at: http://$SSH_HOST"
 echo "Logs saved to: $LOGFILE"
+
 

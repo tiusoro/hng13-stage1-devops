@@ -1,0 +1,22 @@
+[0;32m=== DEPLOYMENT STARTED ===[0m
+Enter GitHub repository URL: Enter Personal Access Token: Enter Branch name: Enter SSH username: Enter Server IP address: Enter SSH port [default 22]: Enter SSH key path: [1;33m[INFO] Repository exists. Pulling latest changes...[0m
+From https://github.com/tiusoro/hng13-stage1-devops
+ * branch            main       -> FETCH_HEAD
+   afb42f0..787d5a3  main       -> origin/main
+Updating afb42f0..787d5a3
+Fast-forward
+ Dockerfile | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
+[1;33m[INFO] Testing SSH connectivity...[0m
+  echo -e "${GREEN}[INFO] SSH connection successful"${YELLOW}[INFO] Testing SSH connectivity...${NC}"{NC}"
+[0;32m[INFO] SSH connection successful[1;33m[INFO] Testing SSH connectivity...[0m{NC}
+[1;33m[INFO] Copying files to remote server (excluding .git)...[0m
+[REMOTE] Extracting project files...
+tar: hng13-stage1-devops/deploy.sh: time stamp 2025-10-22 08:27:17 is 282.771312163 s in the future
+tar: hng13-stage1-devops/Dockerfile: time stamp 2025-10-22 08:32:21 is 586.771159271 s in the future
+tar: hng13-stage1-devops/index.html: time stamp 2025-10-22 08:27:17 is 282.771112531 s in the future
+tar: hng13-stage1-devops/README.md: time stamp 2025-10-22 08:27:17 is 282.771070805 s in the future
+tar: hng13-stage1-devops: time stamp 2025-10-22 08:32:21 is 586.771042784 s in the future
+[1;33m[INFO] Building Docker image and starting container...[0m
+[REMOTE] Building Docker image...
+bash: line 5: docker: command not found

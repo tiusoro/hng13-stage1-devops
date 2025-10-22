@@ -1,0 +1,16 @@
+[0;32m=== DEPLOYMENT STARTED ===[0m
+Enter GitHub repository URL: Enter Personal Access Token: Enter Branch name: Enter SSH username: Enter Server IP address: Enter SSH port [default 22]: Enter SSH key path: [0;32m[INFO] Cloning repository...[0m
+Cloning into 'hng13-stage1-devops'...
+[1;33m[INFO] Testing SSH connectivity...[0m
+  echo -e "${GREEN}[INFO] SSH connection successful"${YELLOW}[INFO] Testing SSH connectivity...${NC}"{NC}"
+[0;32m[INFO] SSH connection successful[1;33m[INFO] Testing SSH connectivity...[0m{NC}
+[1;33m[INFO] Copying files to remote server (excluding .git)...[0m
+[REMOTE] Extracting project files...
+tar: hng13-stage1-devops/deploy.sh: time stamp 2025-10-22 08:27:17 is 584.827684813 s in the future
+tar: hng13-stage1-devops/Dockerfile: time stamp 2025-10-22 08:27:17 is 584.82753567 s in the future
+tar: hng13-stage1-devops/index.html: time stamp 2025-10-22 08:27:17 is 584.827491881 s in the future
+tar: hng13-stage1-devops/README.md: time stamp 2025-10-22 08:27:17 is 584.827439004 s in the future
+tar: hng13-stage1-devops: time stamp 2025-10-22 08:27:17 is 584.827410212 s in the future
+[1;33m[INFO] Building Docker image and starting container...[0m
+[REMOTE] Building Docker image...
+bash: line 5: docker: command not found
