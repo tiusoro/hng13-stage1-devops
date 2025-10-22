@@ -128,7 +128,7 @@ cd ~/$REPO_NAME
 echo "[REMOTE] Building Docker image..."
 $USE_SUDO docker build -t $APP_NAME .
 
-echo "[REMOTE] Stopping old container..."
+echo "[REMOTE] Stopping old container...."
 $USE_SUDO docker stop $APP_NAME >/dev/null 2>&1 || true
 $USE_SUDO docker rm $APP_NAME >/dev/null 2>&1 || true
 
