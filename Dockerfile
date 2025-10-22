@@ -1,19 +1,12 @@
-# Use Ubuntu as the base image
-FROM ubuntu:22.04
+# Use official Nginx base image
+FROM nginx:latest
 
-# Update package list and install Nginx
-RUN apt-get update -y && \
-    apt-get install -y nginx && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# Copy your static web file into the Nginx default HTML directory
+COPY index.html /usr/share/nginx/html/index.html
 
-# Copy the index.html file into the default Nginx web directory
-# Assume index.html is in the same directory as this Dockerfile during build
-COPY index.html /var/www/html/index.html
-
-# Expose port 80 for HTTP traffic
+# Expose port 80 for web traffic
 EXPOSE 80
 
-# Start Nginx in the foreground (non-daemon mode) when the container runs
+# Run Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]
 
